@@ -1,0 +1,87 @@
+version: '3.9'
+
+services:
+  # Autonomic API Server
+  autonomic-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.autonomic
+    container_name: autonomic-api
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=production
+      - LOG_LEVEL=INFO
+      - DATABASE_URL=postgresql://user:password@postgres:5432/autonomic
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - autonomic-network
+    restart: unless-stopped
+
+  # Streamlit Dashboard
+  autonomic-dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: autonomic-dashboard
+    ports:
+      - "8501:8501"
+    environment:
+      - API_URL=http://autonomic-api:8000
+    depends_on:
+      - autonomic-api
+    networks:
+      - autonomic-network
+    restart: unless-stopped
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: autonomic-postgres
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=autonomic
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - autonomic-network
+    restart: unless-stopped
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: autonomic-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - autonomic-network
+    restart: unless-stopped
+
+  # Prometheus Monitoring (optional)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: autonomic-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - autonomic-network
+    restart: unless-stopped
+
+networks:
+  autonomic-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  prometheus_data:

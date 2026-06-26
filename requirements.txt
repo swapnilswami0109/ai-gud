@@ -1,0 +1,17 @@
+streamlit>=1.40
+pandas
+numpy
+plotly
+scikit-learn
+shap
+fairlearn
+matplotlib
+presidio-analyzer
+presidio-anonymizer
+reportlab
+openpyxl
+python-dotenv
+Pillow
+optuna
+joblib
+mlflow
