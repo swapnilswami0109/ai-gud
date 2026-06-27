@@ -1,0 +1,6 @@
+id,group,target,age,income,email
+1,A,1,34,54000,john@example.com
+2,B,0,45,62000,jane@example.com
+3,A,1,23,31000,bob@example.com
+4,B,0,52,72000,alice@example.com
+5,C,1,30,48000,charlie@example.com
