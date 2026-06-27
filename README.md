@@ -1,3 +1,21 @@
+# AI Trust Pipeline
+
+This repository now includes an AI trust pipeline diagram and helper files to run a minimal smoke test.
+
+```mermaid
+flowchart TD
+  A[Upload Dataset] --> B[Data Quality Analysis]
+  B --> C[Fairness Audit]
+  C --> D[Privacy Scan]
+  D --> E[Explainability]
+  E --> F[Risk Assessment]
+  F --> G[Compliance Check]
+  G --> H[AI Trust Score]
+  H --> I[Deployment Decision]
+```
+
+---
+
 # ai-guardian-os
 AI_Guardian_OS/
 │
@@ -83,5 +101,4 @@ The repository includes a helper to register and promote models into the MLflow 
 python3 scripts/mlflow_promote.py --run-id <RUN_ID> --model-name my_model --stage Staging
 ```
 
-CI will run a small MLflow smoke test on each push: it starts an `mlflow server` backed by a local sqlite DB, logs a toy model, registers a model version and promotes it to `Staging` to validate registry functionality.
-
+CI will run a small MLflow smoke test on each push: it starts an `mlflow server` backed by a local sqlite DB, logs a toy model, registers a model version and promotes it to `Staging` to validate r[...]
