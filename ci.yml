@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Syntax check (compile)
+        run: |
+          python -m py_compile app.py pages/*.py scripts/*.py database/*.py || true
+      - name: MLflow smoke test - start server
+        run: |
+          # start MLflow server in background with sqlite backend and local artifact root
+          mkdir -p mlruns
+          nohup mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlruns --host 127.0.0.1 --port 5000 > mlflow.log 2>&1 &
+          echo $! > mlflow.pid
+          # wait for server to be available
+          for i in $(seq 1 20); do
+            if curl -sSf http://127.0.0.1:5000 >/dev/null 2>&1; then
+              echo "mlflow up"
+              break
+            fi
+            sleep 1
+          done
+          sleep 1
+      - name: MLflow smoke test - run CI script
+        run: |
+          python3 scripts/ci_mlflow_smoke.py
+      - name: MLflow cleanup
+        run: |
+          # stop mlflow server started earlier using pid file
+          if [ -f mlflow.pid ]; then
+            kill "$(cat mlflow.pid)" || true
+            rm -f mlflow.pid
+          else
+            pkill -f "mlflow server" || true
+          fi
+          sleep 1
+          echo "--- mlflow.log ---"
+          tail -n 200 mlflow.log || true

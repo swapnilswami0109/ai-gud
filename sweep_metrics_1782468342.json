@@ -1,0 +1,13 @@
+{
+  "timestamp": 1782468342,
+  "model_path": "results/rf_best_1782468342.joblib",
+  "data": "data/sample.csv",
+  "target": "target",
+  "accuracy": 0.5,
+  "f1": 0.6666666666666666,
+  "best_params": {
+    "n_estimators": 162,
+    "max_depth": 28,
+    "min_samples_split": 10
+  }
+}

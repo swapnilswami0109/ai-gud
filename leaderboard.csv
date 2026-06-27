@@ -1,0 +1,2 @@
+timestamp,model_path,data,target,accuracy,f1,best_params
+1782468342,results/rf_best_1782468342.joblib,data/sample.csv,target,0.5,0.6666666666666666,"{'n_estimators': 162, 'max_depth': 28, 'min_samples_split': 10}"
